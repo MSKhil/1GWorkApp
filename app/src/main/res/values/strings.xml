@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">1GWorkApp</string>
+    <string name="welcome">Добро пожаловать в твоё рабочее пространство!</string>
+    <string name="choose_shop">Выбери ТТ</string>
+    <string name="choose_yourself">Выбери себя</string>
+    <string name="password">Введи пароль</string>
+    <string name="reset_bt">Сбросить</string>
+    <string name="next_bt">Далее</string>
+    <string name="return_bt">Вернуться к выбору</string>
+    <string name="month">Месяц:</string>
+    <string name="balance">Твой баланс</string>
+    <string name="cash">Наличные</string>
+    <string name="payday">В зарплату</string>
+    <string name="job_time_monday">Понедельник</string>
+    <string name="job_time_tuesday">Вторник</string>
+    <string name="job_time_wednesday">Среда</string>
+    <string name="job_time_thursday">Четверг</string>
+    <string name="job_time_friday">Пятница</string>
+    <string name="job_time_saturday">Суббота</string>
+    <string name="job_time_sunday">Воскресенье</string>
+    <string name="task">Задача</string>
+    <string name="responsible">Ответственный(-ые)</string>
+</resources>

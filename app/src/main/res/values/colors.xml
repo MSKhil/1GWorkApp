@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="your_balance">#879D79</color>
+    <color name="balance_card">#AAB89B</color>
+    <color name="task">#BFBBA9</color>
+    <color name="task_card">#DCD8C2</color>
+    <color name="navigation_bar">#A87F47</color>
+    <color name="navigation_card">#FFD7AA</color>
+    <color name="navigation_background">#6AE4C8A4</color>
+    <color name="input">#C1C1C1</color>
+</resources>
