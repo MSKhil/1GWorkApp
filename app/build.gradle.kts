@@ -45,6 +45,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
 }
@@ -67,5 +69,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
+    // Библиотеки Google API
+    implementation("com.google.api-client:google-api-client-android:2.8.1")
+    implementation("com.google.api-client:google-api-client-gson:2.8.1")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.38.0")
+    implementation("com.google.http-client:google-http-client-android:2.0.0")
+
 }
