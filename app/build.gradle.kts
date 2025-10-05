@@ -77,4 +77,8 @@ dependencies {
     implementation("com.google.auth:google-auth-library-oauth2-http:1.38.0")
     implementation("com.google.http-client:google-http-client-android:2.0.0")
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.picasso:picasso:2.71828")
 }
