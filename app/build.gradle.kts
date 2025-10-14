@@ -1,11 +1,14 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.compose)
 }
 
 android {
     namespace = "com.example.a1gworkapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.a1gworkapp"
@@ -33,14 +36,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+        }
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -69,13 +71,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
     // Библиотеки Google API
-    implementation("com.google.api-client:google-api-client-android:2.8.1")
     implementation("com.google.api-client:google-api-client-gson:2.8.1")
     implementation("com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.38.0")
-    implementation("com.google.http-client:google-http-client-android:2.0.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.39.1")
+    implementation("com.google.http-client:google-http-client-android:2.0.1")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:3.0.0")

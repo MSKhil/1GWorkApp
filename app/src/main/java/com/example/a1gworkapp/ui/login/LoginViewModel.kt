@@ -6,7 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.a1gworkapp.repository.SheetsRepository
+import com.example.a1gworkapp.network.RetrofitClient
+import com.example.a1gworkapp.network.UserDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,20 +20,12 @@ enum class LoginState {
     FAILURE
 }
 
-data class UserData(
-    val city: String,
-    val shop: String,
-    val employee: String,
-    val password: String,
-    val salarySpreadsheetId: String,
-    val scheduleSpreadsheetId: String
-)
-
 class LoginViewModel: ViewModel() {
 
-    private val repository = SheetsRepository()
+    private val apiService = RetrofitClient.apiService
 
-    private val _allUsers = MutableStateFlow<List<UserData>>(emptyList())
+    private val _allUsers = MutableStateFlow<List<UserDto>>(emptyList())
+
     private val _selectedCity = MutableStateFlow("")
     private val _selectedShop = MutableStateFlow("")
     private val _selectedEmployee = MutableStateFlow("")
@@ -42,9 +35,8 @@ class LoginViewModel: ViewModel() {
     private val _isEmployeeMenuExpanded = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
     private val _loginState = MutableStateFlow(LoginState.IDLE)
+    private val _errorMessage = MutableStateFlow<String?>(null)
 
-
-    val allUsers: StateFlow<List<UserData>> = _allUsers.asStateFlow()
     val selectedCity: StateFlow<String> = _selectedCity.asStateFlow()
     var selectedShop: StateFlow<String> = _selectedShop
     val selectedEmployee: StateFlow<String> = _selectedEmployee
@@ -54,102 +46,73 @@ class LoginViewModel: ViewModel() {
     val isEmployeeMenuExpanded: StateFlow<Boolean> = _isEmployeeMenuExpanded.asStateFlow()
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     val cities: List<String>
-        get() = _allUsers.value.map { it.city }.distinct()
+        get() = _allUsers.value.map { it.city }.distinct().filter { it.isNotBlank() }
 
     val shops: List<String>
-        get() = if (selectedCity.value.isNotBlank()){
-            _allUsers.value.filter { it.city == _selectedCity.value }.map { it.shop }.distinct()
+        get() = if (selectedCity.value.isNotBlank()) {
+            _allUsers.value.filter { it.city == selectedCity.value }.map { it.shop }.distinct().filter { it.isNotBlank() }
         } else {
-                emptyList()
-            }
+            emptyList()
+        }
 
     val employees: List<String>
-        get() = if (selectedShop.value.isNotBlank()){
-            _allUsers.value.filter { it.shop == _selectedShop.value }.map { it.employee }.distinct()
-            } else{
-                emptyList()
-            }
+        get() = if (selectedShop.value.isNotBlank()) {
+            _allUsers.value.filter { it.shop == selectedShop.value }.map { it.employeeName }.distinct().filter { it.isNotBlank() }
+        } else {
+            emptyList()
+        }
 
     init {
-        Log.d("LoginViewModel", "ViewModel создана. Запускаю loadUsers...")
-
         loadUsers()
     }
 
-    fun loadUsers(){
-        Log.d("LoginViewModel", "Функция loadUsers НАЧАЛАСЬ.")
-
+    private fun loadUsers() {
         viewModelScope.launch {
-            Log.d("LoginViewModel", "Корутина ЗАПУЩЕНА.")
-
             _isLoading.value = true
+            _errorMessage.value = null
+
+            Log.d("LoginViewModel", "Начинаю загрузку пользователей через Retrofit...")
+
             try {
-                val apiKey = "AIzaSyDAKa20T9wWRScf5_G7ECSvH20kNudf4m8"
-                val spreadsheetId = "168IuYgMbU_c0HSirk9BsNyUrPm3aPDR5nFyy3hj15yU"
-                val range = "Users!A:F"
+                val users = apiService.getUsers()
 
-                Log.d("LoginViewModel", "Начинаю сетевой запрос...")
+                Log.d("LoginViewModel", "Успешно загружено пользователей: ${users.size}")
 
-                val rawData = repository.getSheetData(apiKey, spreadsheetId, range)
-                if (rawData != null){
-                    Log.d("LoginViewModel", "ТЕСТОВЫЕ ДАННЫЕ УСПЕШНО ПОЛУЧЕНЫ! Строк: ${rawData.size}")
-                    Log.d("LoginViewModel", "Первая строка: ${rawData.firstOrNull()}")
-
-
-                    val users = rawData
-                        .drop(1)
-                        .mapNotNull { row ->
-                            if (row.size >= 6) {
-                                UserData(
-                                    city = row[0].toString(),
-                                    shop = row[1].toString(),
-                                    employee = row[2].toString(),
-                                    password = row[3].toString(),
-                                    salarySpreadsheetId = row[4].toString(),
-                                    scheduleSpreadsheetId = row[5].toString()
-                                )
-                            } else {
-                                null
-                            }
-                        }
-                    _allUsers.value = users
-                    Log.d("LoginViewModel", "Парсинг завершен. Пользователей в списке: ${_allUsers.value.size}")
-
-                } else {
-                }
-            } catch (e: Exception) {
-                Log.e("LoginViewModel", "ОШИБКА при загрузке: ${e.message}", e)
-
+                _allUsers.value = users
+            }
+            catch (e: Exception) {
+                Log.e("LoginViewModel", "Ошибка при загрузке пользователей", e)
+                _errorMessage.value = "Не удалось загрузить данные. Проверьте интернет."
+                // В будущем мы покажем это сообщение пользователю
             } finally {
                 _isLoading.value = false
-                Log.d("LoginViewModel", "Блок finally. Загрузка завершена.")
-
             }
         }
     }
 
     fun onCitySelected(city: String) {
-        _loginState.value = LoginState.IDLE
+        resetLoginState()
         _selectedCity.value = city
         _selectedShop.value = ""
         _selectedEmployee.value = ""
     }
 
     fun onShopSelected (shop: String) {
-        _loginState.value = LoginState.IDLE
+        resetLoginState()
         _selectedShop.value = shop
         _selectedEmployee.value = ""
     }
 
     fun onEmployeeSelected(employee: String) {
-        _loginState.value = LoginState.IDLE
+        resetLoginState()
         _selectedEmployee.value = employee
     }
 
     fun onPasswordChange(newPassword: String) {
-        _loginState.value = LoginState.IDLE
+        resetLoginState()
         _password.value = newPassword
     }
 
@@ -165,18 +128,30 @@ class LoginViewModel: ViewModel() {
         _isEmployeeMenuExpanded.value = isExpanded
     }
 
+    private fun resetLoginState() {
+        if (_loginState.value != LoginState.IDLE) {
+            _loginState.value = LoginState.IDLE
+        }
+    }
+
     fun login(){
-        if (_selectedCity.value.isBlank() || _selectedShop.value.isBlank() || _selectedEmployee.value.isBlank()) {
-            _loginState.value = LoginState.FAILURE
+        if (selectedCity.value.isBlank() || selectedShop.value.isBlank() || selectedEmployee.value.isBlank()) {
             return
         }
 
-        val currentUserData = _allUsers.value.find { userData -> userData.city == _selectedCity.value &&
-                    userData.shop == _selectedShop.value &&
-                    userData.employee == _selectedEmployee.value}
+        val currentUser = _allUsers.value.find { user ->
+            user.city == selectedCity.value &&
+                    user.shop == selectedShop.value &&
+                    user.employeeName == selectedEmployee.value
+        }
 
-        if (currentUserData != null && currentUserData.password == _password.value) {
+        if (currentUser != null && currentUser.password == password.value) {
+            Log.d("LoginViewModel", "Успешный вход для: ${currentUser.employeeName}")
+            // TODO: Сохранить ID таблиц (salarySheetId, scheduleSheetId) для дальнейшей работы
             _loginState.value = LoginState.SUCCESS
+        } else {
+            Log.d("LoginViewModel", "Неверный пароль или пользователь не найден")
+            _loginState.value = LoginState.FAILURE
         }
     }
 }
