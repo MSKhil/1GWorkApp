@@ -128,7 +128,7 @@ class LoginViewModel: ViewModel() {
         _isEmployeeMenuExpanded.value = isExpanded
     }
 
-    private fun resetLoginState() {
+    fun resetLoginState() {
         if (_loginState.value != LoginState.IDLE) {
             _loginState.value = LoginState.IDLE
         }
