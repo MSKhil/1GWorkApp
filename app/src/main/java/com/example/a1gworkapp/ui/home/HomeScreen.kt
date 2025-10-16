@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,7 +19,7 @@ import com.example.a1gworkapp.ui.components.TaskCard
 import com.example.a1gworkapp.ui.components.LinkBar
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onLogoutClick: () -> Unit) {
     val scrollState = rememberScrollState()
 
     Scaffold (
@@ -28,15 +30,18 @@ fun HomeScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
+                .padding(innerPadding)
                 .verticalScroll(scrollState)
         ) {
+            Button(onClick = onLogoutClick) {
+                Text("Выход")
+            }
             Greeting("Хиль Марк", "Июнь", 10)
             SalaryCard(
                 100000, 60000, 40000, 130000,70000, 60000
             )
             Spacer(modifier = Modifier.height(10.dp))
-            TaskCard()
+            //TaskCard()
             Spacer(modifier = Modifier.height(110.dp))
         }
     }

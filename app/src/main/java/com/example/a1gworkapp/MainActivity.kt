@@ -46,7 +46,9 @@ class MainActivity : ComponentActivity() {
             }
 
             if (loginState == LoginState.SUCCESS) {
-                HomeScreen()
+                HomeScreen(
+                    onLogoutClick = { viewModel.logout() }
+                )
             } else {
                 val selectedCity by viewModel.selectedCity.collectAsState()
                 val selectedShop by viewModel.selectedShop.collectAsState()

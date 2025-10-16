@@ -154,4 +154,8 @@ class LoginViewModel: ViewModel() {
             _loginState.value = LoginState.FAILURE
         }
     }
+
+    fun logout() {
+        _loginState.value = LoginState.IDLE
+    }
 }
