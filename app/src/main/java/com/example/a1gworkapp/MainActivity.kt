@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.a1gworkapp.ui.home.HomeScreen
+import com.example.a1gworkapp.ui.home.HomeViewModel
 import com.example.a1gworkapp.ui.login.LoginState
 
 
@@ -20,49 +21,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val viewModel: LoginViewModel = viewModel()
+            val loginViewModel:  LoginViewModel = viewModel()
+            val homeViewModel: HomeViewModel = viewModel()
 
-            val loginState by viewModel.loginState.collectAsState()
+            val loginState by loginViewModel.loginState.collectAsState()
+            val loggedInUser by loginViewModel.loggedInUser.collectAsState()
 
-            val context = LocalContext.current
-            LaunchedEffect(key1 = loginState) {
-                when (loginState) {
-                    LoginState.SUCCESS -> {
-                        Toast.makeText(context, "Вход успешен!", Toast.LENGTH_SHORT).show()
-                    }
-
-                    LoginState.FAILURE -> {
-                        Toast.makeText(
-                            context,
-                            "Неверный пароль или пользователь",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        viewModel.resetLoginState()
-                    }
-
-                    LoginState.IDLE -> {
-                    }
+            LaunchedEffect(loggedInUser) {
+                loggedInUser?.let { user ->
+                    homeViewModel.loadData(
+                        salarySheetsId = user.salarySheetId,
+                        scheduleSheetId = user.scheduleSheetId,
+                        employeeName = user.employeeName
+                    )
                 }
             }
 
             if (loginState == LoginState.SUCCESS) {
                 HomeScreen(
-                    onLogoutClick = { viewModel.logout() }
+                    homeViewModel = homeViewModel,
+                    onLogoutClick = { loginViewModel.logout() }
                 )
             } else {
-                val selectedCity by viewModel.selectedCity.collectAsState()
-                val selectedShop by viewModel.selectedShop.collectAsState()
-                val selectedEmployee by viewModel.selectedEmployee.collectAsState()
-                val password by viewModel.password.collectAsState()
-                val isLoading by viewModel.isLoading.collectAsState()
+                val selectedCity by loginViewModel.selectedCity.collectAsState()
+                val selectedShop by loginViewModel.selectedShop.collectAsState()
+                val selectedEmployee by loginViewModel.selectedEmployee.collectAsState()
+                val password by loginViewModel.password.collectAsState()
+                val isLoading by loginViewModel.isLoading.collectAsState()
 
-                val cities = viewModel.cities
-                val shops = viewModel.shops
-                val employees = viewModel.employees
+                val cities = loginViewModel.cities
+                val shops = loginViewModel.shops
+                val employees = loginViewModel.employees
 
-                val isCityMenuExpanded by viewModel.isCityMenuExpanded.collectAsState()
-                val isShopMenuExpanded by viewModel.isShopMenuExpanded.collectAsState()
-                val isEmployeeMenuExpanded by viewModel.isEmployeeMenuExpanded.collectAsState()
+                val isCityMenuExpanded by loginViewModel.isCityMenuExpanded.collectAsState()
+                val isShopMenuExpanded by loginViewModel.isShopMenuExpanded.collectAsState()
+                val isEmployeeMenuExpanded by loginViewModel.isEmployeeMenuExpanded.collectAsState()
 
                 LoginScreen(
                     cities = cities,
@@ -76,14 +69,14 @@ class MainActivity : ComponentActivity() {
                     isCityMenuExpanded = isCityMenuExpanded,
                     isShopMenuExpanded = isShopMenuExpanded,
                     isEmployeeMenuExpanded = isEmployeeMenuExpanded,
-                    onCityMenuExpandedChange = viewModel::onCityMenuExpandedChange,
-                    onShopMenuExpandedChange = viewModel::onShopMenuExpandedChange,
-                    onEmployeeMenuExpandedChange = viewModel::onEmployeeMenuExpandedChange,
-                    onCitySelected = viewModel::onCitySelected,
-                    onShopSelected = viewModel::onShopSelected,
-                    onEmployeeSelected = viewModel::onEmployeeSelected,
-                    onPasswordChange = viewModel::onPasswordChange,
-                    onLoginClick = viewModel::login
+                    onCityMenuExpandedChange = loginViewModel::onCityMenuExpandedChange,
+                    onShopMenuExpandedChange = loginViewModel::onShopMenuExpandedChange,
+                    onEmployeeMenuExpandedChange = loginViewModel::onEmployeeMenuExpandedChange,
+                    onCitySelected = loginViewModel::onCitySelected,
+                    onShopSelected = loginViewModel::onShopSelected,
+                    onEmployeeSelected = loginViewModel::onEmployeeSelected,
+                    onPasswordChange = loginViewModel::onPasswordChange,
+                    onLoginClick = loginViewModel::login
                 )
             }
         }

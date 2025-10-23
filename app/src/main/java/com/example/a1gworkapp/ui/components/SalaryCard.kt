@@ -32,170 +32,14 @@ import com.example.a1gworkapp.R
 //Зарплата
 @Composable
 fun SalaryCard(
-    salary1с: Int, cash1с: Int, card1с: Int, salaryf: Int, cashf: Int, cardf: Int
+    salary: Int,
+    cash: Int,
+    card: Int
 ) {
     LazyRow (
         modifier = Modifier,
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-// Начисление по 1С
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxHeight(0.8f)
-                    .padding(start = 15.dp),
-                shape = RoundedCornerShape(30.dp),
-                colors = CardDefaults.cardColors(colorResource(R.color.your_balance)),
-                elevation = CardDefaults.cardElevation(15.dp)
-            ) {
-                Column (horizontalAlignment = Alignment.CenterHorizontally){
-//Общий баланс - надпись сверху
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp, top = 30.dp, end = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Text(
-                            text = stringResource(R.string.balance),
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Spacer(modifier = Modifier.width(50.dp))
-                        Text(
-                            text = "$salary1с ₽",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-//Карточки (Нал и ЗП)
-                    Row {
-//Первая карточка - Нал. Создаём поле Card, добавляем изображение и 2 строки с описанием и кол-ом нала
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                shape = RoundedCornerShape(30.dp),
-                                elevation = CardDefaults.cardElevation(15.dp),
-                                colors = CardDefaults.cardColors(colorResource(R.color.balance_card))
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, bottom = 20.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(start = 10.dp, end = 10.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Image(
-                                            painter = painterResource(R.drawable.cash),
-                                            contentDescription = "cash",
-                                            modifier = Modifier.size(50.dp)
-                                        )
-                                        Text("   ")
-                                        Text(
-                                            text = "$cash1с ₽",
-                                            fontSize = 23.sp,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(20.dp))
-
-                                    Box {
-                                        Row (
-                                            modifier = Modifier
-                                                .padding(start = 20.dp, end = 20.dp)
-                                        ){
-                                            Text(
-                                                text = stringResource(R.string.cash),
-                                                fontSize = 25.sp,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(10.dp))
-//Вторая карточка - ЗП. Создаём поле Card, добавляем изображение и 2 строки с описанием и кол-ом в ЗП
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                shape = RoundedCornerShape(30.dp),
-                                elevation = CardDefaults.cardElevation(15.dp),
-                                colors = CardDefaults.cardColors(colorResource(R.color.balance_card))
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, bottom = 20.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(start = 10.dp, end = 10.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Image(
-                                            painter = painterResource(R.drawable.card),
-                                            contentDescription = "card",
-                                            modifier = Modifier
-                                                .size(50.dp)
-                                        )
-                                        Text("   ")
-                                        Text(
-                                            text = "$card1с ₽",
-                                            fontSize = 23.sp,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(20.dp))
-
-                                    Box {
-                                        Row (
-                                            modifier = Modifier
-                                                .padding(start = 20.dp, end = 20.dp)
-                                        ){
-                                            Text(
-                                                text = stringResource(R.string.payday),
-                                                fontSize = 25.sp,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row (
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text("Начисления по 1С",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Medium)
-                    }
-                }
-            }
-        }
-
 
 // Начисление по факту
         item{
@@ -222,7 +66,7 @@ fun SalaryCard(
                         )
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = "$salaryf ₽",
+                            text = "$salary ₽",
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -230,7 +74,7 @@ fun SalaryCard(
                     Spacer(modifier = Modifier.height(20.dp))
 //Карточки (Нал и ЗП)
                     Row {
-//Первая карточка - Нал. Создаём поле Card, добавляем изображение и 2 строки с описанием и кол-ом нала
+//Первая карточка - Нал.
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
@@ -255,7 +99,7 @@ fun SalaryCard(
                                         )
                                         Text("   ")
                                         Text(
-                                            text = "$cashf ₽",
+                                            text = "$cash ₽",
                                             fontSize = 23.sp,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -277,7 +121,7 @@ fun SalaryCard(
                         }
 
                         Spacer(modifier = Modifier.width(10.dp))
-//Вторая карточка - ЗП. Создаём поле Card, добавляем изображение и 2 строки с описанием и кол-ом в ЗП
+//Вторая карточка - ЗП.
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                         ) {
@@ -310,7 +154,7 @@ fun SalaryCard(
                                         )
                                         Text("   ")
                                         Text(
-                                            text = "$cardf ₽",
+                                            text = "$card ₽",
                                             fontSize = 23.sp,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -333,17 +177,6 @@ fun SalaryCard(
                                 }
                             }
                         }
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row (
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text("Начисления по факту",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Medium)
                     }
                 }
             }

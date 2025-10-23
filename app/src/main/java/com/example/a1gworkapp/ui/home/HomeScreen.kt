@@ -11,38 +11,56 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.a1gworkapp.ui.components.Greeting
 import com.example.a1gworkapp.ui.components.SalaryCard
 import com.example.a1gworkapp.ui.components.TaskCard
 import com.example.a1gworkapp.ui.components.LinkBar
+import androidx.compose.runtime.getValue
 
 @Composable
-fun HomeScreen(onLogoutClick: () -> Unit) {
-    val scrollState = rememberScrollState()
+fun HomeScreen(
+homeViewModel: HomeViewModel,
+onLogoutClick: () -> Unit
+) {
+    val salaryData by homeViewModel.salaryData.collectAsState()
+    val scheduleData by homeViewModel.scheduleData.collectAsState()
+    val isLoading by homeViewModel.isLoading.collectAsState()
+    val errorMessage by homeViewModel.errorMessage.collectAsState()
+    val scheduleState by homeViewModel.scheduleState.collectAsState()
+    val currentMonthSalary = salaryData.lastOrNull()
 
-    Scaffold (
-        bottomBar =  {
-            LinkBar()
-        }
-    ) { innerPadding ->
+    Scaffold(bottomBar = { LinkBar() }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(scrollState)
+                .verticalScroll(rememberScrollState())
         ) {
             Button(onClick = onLogoutClick) {
                 Text("Выход")
             }
-            Greeting("Хиль Марк", "Июнь", 10)
-            SalaryCard(
-                100000, 60000, 40000, 130000,70000, 60000
+
+            currentMonthSalary?.let { salary ->
+                Greeting(
+                    worker = salary.employee,
+                    month = salary.month,
+                    dayCount = salary.workShift
+                )
+                SalaryCard(
+                    salary = salary.salary.toInt(),
+                    cash = salary.cash.toInt(),
+                    card = salary.card.toInt()
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TaskCard(
+                thisWeekSchedule = scheduleState.thisWeekSchedule,
+                nextWeekSchedule = scheduleState.nextWeekSchedule
             )
-            Spacer(modifier = Modifier.height(10.dp))
-            //TaskCard()
-            Spacer(modifier = Modifier.height(110.dp))
         }
     }
 }

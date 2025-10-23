@@ -36,6 +36,7 @@ class LoginViewModel: ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     private val _loginState = MutableStateFlow(LoginState.IDLE)
     private val _errorMessage = MutableStateFlow<String?>(null)
+    private val _loggedInUser = MutableStateFlow<UserDto?>(null)
 
     val selectedCity: StateFlow<String> = _selectedCity.asStateFlow()
     var selectedShop: StateFlow<String> = _selectedShop
@@ -47,6 +48,8 @@ class LoginViewModel: ViewModel() {
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+    val loggedInUser: StateFlow<UserDto?> = _loggedInUser.asStateFlow()
+
 
     val cities: List<String>
         get() = _allUsers.value.map { it.city }.distinct().filter { it.isNotBlank() }
@@ -147,15 +150,17 @@ class LoginViewModel: ViewModel() {
 
         if (currentUser != null && currentUser.password == password.value) {
             Log.d("LoginViewModel", "Успешный вход для: ${currentUser.employeeName}")
-            // TODO: Сохранить ID таблиц (salarySheetId, scheduleSheetId) для дальнейшей работы
             _loginState.value = LoginState.SUCCESS
+            _loggedInUser.value = currentUser
         } else {
             Log.d("LoginViewModel", "Неверный пароль или пользователь не найден")
             _loginState.value = LoginState.FAILURE
+            _loggedInUser.value = null
         }
     }
 
     fun logout() {
         _loginState.value = LoginState.IDLE
+        _loggedInUser.value = null
     }
 }
