@@ -8,12 +8,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a1gworkapp.ui.login.LoginScreen
 import com.example.a1gworkapp.ui.login.LoginViewModel
 import androidx.compose.runtime.getValue
-import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import com.example.a1gworkapp.ui.home.HomeScreen
 import com.example.a1gworkapp.ui.home.HomeViewModel
 import com.example.a1gworkapp.ui.login.LoginState
+import com.example.a1gworkapp.data.UserPreferencesRepository
+import com.example.a1gworkapp.ui.login.LoginViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +21,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val loginViewModel:  LoginViewModel = viewModel()
+            val userPreferencesRepository = UserPreferencesRepository(applicationContext)
+
+            val loginViewModel:  LoginViewModel = viewModel(
+                factory = LoginViewModelFactory(userPreferencesRepository)
+            )
             val homeViewModel: HomeViewModel = viewModel()
 
             val loginState by loginViewModel.loginState.collectAsState()
@@ -37,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            if (loginState == LoginState.SUCCESS) {
+            if (loginState == LoginState.SUCCESS || loginState == LoginState.LOADING_AUTO) {
                 HomeScreen(
                     homeViewModel = homeViewModel,
                     onLogoutClick = { loginViewModel.logout() }
