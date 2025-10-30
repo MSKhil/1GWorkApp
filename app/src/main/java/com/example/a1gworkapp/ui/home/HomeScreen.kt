@@ -1,8 +1,13 @@
 package com.example.a1gworkapp.ui.home
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.example.a1gworkapp.ui.components.Greeting
 import com.example.a1gworkapp.ui.components.SalaryCard
 import com.example.a1gworkapp.ui.components.TaskCard
-import com.example.a1gworkapp.ui.components.LinkBar
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun HomeScreen(
@@ -32,12 +38,17 @@ onLogoutClick: () -> Unit
     val scheduleState by homeViewModel.scheduleState.collectAsState()
     val currentMonthSalary = salaryData.lastOrNull()
 
-    Scaffold(bottomBar = { LinkBar() }) { innerPadding ->
+    val context = LocalContext.current
+    val motivationUrl = "https://docs.google.com/spreadsheets/d/1ynj_7wBLXgnFCaqLhr_OTuv61fm_reU0/edit?gid=1355084412#gid=1355084412"
+    val actionsUrl = "https://docs.google.com/spreadsheets/d/1swtOJv0Lu5_Mu1USUltOeAg2FQFw4eiZTxLO3bTDo1s/edit?gid=0#gid=0"
+
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(onClick = onLogoutClick) {
                 Text("Выход")
@@ -61,6 +72,26 @@ onLogoutClick: () -> Unit
                 thisWeekSchedule = scheduleState.thisWeekSchedule,
                 nextWeekSchedule = scheduleState.nextWeekSchedule
             )
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(motivationUrl))
+                    context.startActivity(intent)
+                }) {
+                    Text("Мотивация")
+                }
+                Button(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(actionsUrl))
+                    context.startActivity(intent)
+                }) {
+                    Text("Акции")
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
