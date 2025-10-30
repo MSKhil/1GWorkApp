@@ -1,7 +1,6 @@
 package com.example.a1gworkapp.ui.home
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +24,7 @@ import com.example.a1gworkapp.ui.components.TaskCard
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
@@ -32,9 +32,6 @@ homeViewModel: HomeViewModel,
 onLogoutClick: () -> Unit
 ) {
     val salaryData by homeViewModel.salaryData.collectAsState()
-    val scheduleData by homeViewModel.scheduleData.collectAsState()
-    val isLoading by homeViewModel.isLoading.collectAsState()
-    val errorMessage by homeViewModel.errorMessage.collectAsState()
     val scheduleState by homeViewModel.scheduleState.collectAsState()
     val currentMonthSalary = salaryData.lastOrNull()
 
@@ -79,13 +76,13 @@ onLogoutClick: () -> Unit
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(motivationUrl))
+                    val intent = Intent(Intent.ACTION_VIEW, motivationUrl.toUri())
                     context.startActivity(intent)
                 }) {
                     Text("Мотивация")
                 }
                 Button(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(actionsUrl))
+                    val intent = Intent(Intent.ACTION_VIEW, actionsUrl.toUri())
                     context.startActivity(intent)
                 }) {
                     Text("Акции")
