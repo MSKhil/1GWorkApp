@@ -1,6 +1,7 @@
 package com.example.a1gworkapp.ui.home
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,16 +29,25 @@ import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
-homeViewModel: HomeViewModel,
-onLogoutClick: () -> Unit
+    homeViewModel: HomeViewModel,
+    onLogoutClick: () -> Unit
 ) {
     val salaryData by homeViewModel.salaryData.collectAsState()
     val scheduleState by homeViewModel.scheduleState.collectAsState()
     val currentMonthSalary = salaryData.lastOrNull()
 
+    val salarySheetId = "1_P1MF7hW_MoGY9U-WXXmZv-WyeyhJPIzB0j3FR3e6nU"
+    val scheduleSheetId = "1r_jXKjDm42ITw3bdWaDNMfaQnvIf9Ye9u8NR2KoQ8y8"
+
     val context = LocalContext.current
-    val motivationUrl = "https://docs.google.com/spreadsheets/d/1ynj_7wBLXgnFCaqLhr_OTuv61fm_reU0/edit?gid=1355084412#gid=1355084412"
-    val actionsUrl = "https://docs.google.com/spreadsheets/d/1swtOJv0Lu5_Mu1USUltOeAg2FQFw4eiZTxLO3bTDo1s/edit?gid=0#gid=0"
+    val motivationUrl =
+        "https://docs.google.com/spreadsheets/d/1ynj_7wBLXgnFCaqLhr_OTuv61fm_reU0/edit?gid=1355084412#gid=1355084412"
+    val actionsUrl =
+        "https://docs.google.com/spreadsheets/d/1swtOJv0Lu5_Mu1USUltOeAg2FQFw4eiZTxLO3bTDo1s/edit?gid=0#gid=0"
+    val salaryUrl =
+        "https://docs.google.com/spreadsheets/d/$salarySheetId"
+    val scheduleUrl =
+        "https://docs.google.com/spreadsheets/d/$scheduleSheetId"
 
     Scaffold { innerPadding ->
         Column(
@@ -47,7 +57,9 @@ onLogoutClick: () -> Unit
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = onLogoutClick) {
+            Button(
+                onClick = onLogoutClick
+            ) {
                 Text("Выход")
             }
 
@@ -60,32 +72,50 @@ onLogoutClick: () -> Unit
                 SalaryCard(
                     salary = salary.salary.toInt(),
                     cash = salary.cash.toInt(),
-                    card = salary.card.toInt()
+                    card = salary.card.toInt(),
+                    onOpenUrlClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(salaryUrl))
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
 
             TaskCard(
                 thisWeekSchedule = scheduleState.thisWeekSchedule,
-                nextWeekSchedule = scheduleState.nextWeekSchedule
+                nextWeekSchedule = scheduleState.nextWeekSchedule,
+                onOpenUrlClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(scheduleUrl))
+                }
             )
             Spacer(modifier = Modifier.height(32.dp))
 
-            Row(
+            Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, motivationUrl.toUri())
+                    val intent = Intent(Intent.ACTION_VIEW, salaryUrl.toUri())
                     context.startActivity(intent)
                 }) {
-                    Text("Мотивация")
+                    Text("Получка")
+                }
+                Button(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, scheduleUrl.toUri())
+                    context.startActivity(intent)
+                }) {
+                    Text("График")
                 }
                 Button(onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, actionsUrl.toUri())
                     context.startActivity(intent)
                 }) {
                     Text("Акции")
+                }
+                Button(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, motivationUrl.toUri())
+                    context.startActivity(intent)
+                }) {
+                    Text("Мотивация")
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
