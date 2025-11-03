@@ -45,9 +45,9 @@ fun HomeScreen(
     val actionsUrl =
         "https://docs.google.com/spreadsheets/d/1swtOJv0Lu5_Mu1USUltOeAg2FQFw4eiZTxLO3bTDo1s/edit?gid=0#gid=0"
     val salaryUrl =
-        "https://docs.google.com/spreadsheets/d/$salarySheetId"
+        "https://docs.google.com/spreadsheets/d/1_P1MF7hW_MoGY9U-WXXmZv-WyeyhJPIzB0j3FR3e6nU/edit?gid=1866700275#gid=1866700275"
     val scheduleUrl =
-        "https://docs.google.com/spreadsheets/d/$scheduleSheetId"
+        "https://docs.google.com/spreadsheets/d/1r_jXKjDm42ITw3bdWaDNMfaQnvIf9Ye9u8NR2KoQ8y8/edit?gid=0#gid=0"
 
     Scaffold { innerPadding ->
         Column(

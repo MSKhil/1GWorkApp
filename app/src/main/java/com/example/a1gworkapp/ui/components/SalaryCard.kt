@@ -184,15 +184,6 @@ fun SalaryCard(
 
                 Spacer(modifier = Modifier.width(10.dp))
             }
-            Icon(
-                imageVector = Icons.Default.OpenInBrowser,
-                contentDescription = "Open in browser",
-                modifier = Modifier
-                    .zIndex(1f)
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp)
-                    .clickable { onOpenUrlClick() }
-            )
         }
     }
 }
