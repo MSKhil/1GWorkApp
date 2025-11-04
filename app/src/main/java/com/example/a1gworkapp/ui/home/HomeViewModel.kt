@@ -9,6 +9,7 @@ import com.example.a1gworkapp.network.RetrofitClient
 import com.example.a1gworkapp.network.SalaryDto
 import com.example.a1gworkapp.network.ScheduleDto
 import com.example.a1gworkapp.ui.components.ScheduleUiState
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,21 +39,29 @@ class HomeViewModel: ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            Log.d("HomeViewModel", "Загрузка данных для $employeeName...")
+            Log.d("HomeViewModel", "Параллельная загрузка данных для $employeeName...")
 
             try {
-                val salary = apiService.getSalary(
-                    spreadsheetId = salarySheetsId,
-                    employeeName = employeeName
-                )
+                val salaryDeferred = async {
+                    apiService.getSalary(
+                        spreadsheetId = salarySheetsId,
+                        employeeName = employeeName
+                    )
+                }
+
+                val scheduleDeferred = async {
+                    apiService.getSchedule(spreadsheetId = scheduleSheetId)
+                }
+
+                val salary = salaryDeferred.await()
+                val schedule = scheduleDeferred.await()
+
                 _salaryData.value = salary
                 Log.d("HomeViewModel", "Зарплата загружена: ${salary.size} записей.")
-
-                val schedule = apiService.getSchedule(spreadsheetId = scheduleSheetId)
                 _scheduleData.value = schedule
                 Log.d("HomeViewModel", "График загружен: ${schedule.size} записей.")
             }catch (e: Exception) {
-                Log.e("HomeViewModel", "Ошибка при загрузке данных", e)
+                Log.e("HomeViewModel", "Ошибка при параллельной загрузке данных", e)
                 _errorMessage.value = "Не удалось загрузить данные."
             } finally {
                 _isLoading.value = false
