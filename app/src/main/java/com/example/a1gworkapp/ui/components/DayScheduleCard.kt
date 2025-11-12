@@ -1,81 +1,88 @@
 package com.example.a1gworkapp.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.a1gworkapp.R
+import com.example.a1gworkapp.ui.theme._1GWorkAppTheme
 
 @Composable
 fun DayScheduleCard (
     dayName: String,
     workers: List<String>,
-    workTimes: List<String>
+    workTimes: List<String>,
+    modifier: Modifier = Modifier
 ){
-    Card (
-        modifier = Modifier
-            .heightIn(min = 180.dp)
-            .widthIn(min = 180.dp),
-        shape = RoundedCornerShape(30.dp),
-        colors = CardDefaults.cardColors(colorResource(R.color.task_card))
-    ){
-        Column (
+    Card(
+        modifier = modifier.width(180.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 10.dp, end = 10.dp, top = 20.dp, bottom = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = dayName,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp)
-            ) {
-                Column {
-                    workers.forEach { workerName ->
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val scheduleEntries = workers.zip(workTimes)
+
+            Column(horizontalAlignment = Alignment.Start) {
+                scheduleEntries.forEach { (worker, time) ->
+                    Row{
                         Text(
-                            text = workerName,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
+                            text = worker,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f)
                         )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(7.dp))
-
-                Column {
-                    workTimes.forEach { time ->
                         Text(
                             text = time,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DayScheduleCardPreview() {
+    _1GWorkAppTheme {
+        Surface {
+            DayScheduleCard(
+                dayName = "Понедельник",
+                workers = listOf("ХИЛЬ", "КОНДРАТЮК"),
+                workTimes = listOf("10:00-20:00", "11:00-21:00")
+            )
         }
     }
 }
