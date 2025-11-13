@@ -3,12 +3,14 @@ package com.example.a1gworkapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.a1gworkapp.ui.login.LoginScreen
 import com.example.a1gworkapp.ui.login.LoginViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.a1gworkapp.ui.home.HomeScreen
 import com.example.a1gworkapp.ui.home.HomeViewModel
 import com.example.a1gworkapp.ui.login.LoginState
@@ -21,7 +23,7 @@ import com.example.a1gworkapp.ui.theme._1GWorkAppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        installSplashScreen()
         setContent {
             _1GWorkAppTheme {
                 val userPreferencesRepository = UserPreferencesRepository(applicationContext)

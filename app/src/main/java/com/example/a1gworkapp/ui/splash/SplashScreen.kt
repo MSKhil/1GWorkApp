@@ -1,13 +1,17 @@
 package com.example.a1gworkapp.ui.splash
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.a1gworkapp.R
 
 @Composable
 fun SplashScreen() {
@@ -16,10 +20,10 @@ fun SplashScreen() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "1Galaxy",
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onBackground
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "App logo",
+                modifier = Modifier.size(300.dp)
             )
         }
     }
