@@ -1,6 +1,9 @@
 package com.example.a1gworkapp.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
@@ -33,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.a1gworkapp.R
 import com.example.a1gworkapp.data.DaySchedule
 import com.example.a1gworkapp.ui.theme._1GWorkAppTheme
+import kotlinx.coroutines.launch
 import org.w3c.dom.Text
 
 @Composable
@@ -40,6 +47,18 @@ fun TaskCard(
     thisWeekSchedule: List<DaySchedule>,
     nextWeekSchedule: List<DaySchedule>
 ) {
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val todayIndex = thisWeekSchedule.indexOfFirst { it.isToday }
+
+    LaunchedEffect(thisWeekSchedule) {
+        if (todayIndex >= 0) {
+            coroutineScope.launch {
+                listState.animateScrollToItem(index = todayIndex)
+            }
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,14 +82,25 @@ fun TaskCard(
             )
 
             LazyRow(
+                state = listState,
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(thisWeekSchedule) { dayData ->
+                items(thisWeekSchedule.size) { index ->
+                    val dayData = thisWeekSchedule[index]
+
                     DayScheduleCard(
                         dayName = dayData.dayName,
                         workers = dayData.workers,
-                        workTimes = dayData.workTimes
+                        workTimes = dayData.workTimes,
+                        modifier = if (dayData.isToday) {
+                            Modifier.border(
+                                BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+                                shape = RoundedCornerShape(24.dp)
+                            )
+                        } else {
+                            Modifier
+                        }
                     )
                 }
             }

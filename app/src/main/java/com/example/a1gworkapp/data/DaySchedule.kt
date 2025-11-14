@@ -4,5 +4,6 @@ data class DaySchedule(
     val dayName: String,
     val date: String,
     val workers: List<String>,
-    val workTimes: List<String>
+    val workTimes: List<String>,
+    val isToday: Boolean = false
 )

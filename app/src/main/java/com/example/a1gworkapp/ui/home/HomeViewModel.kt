@@ -1,7 +1,6 @@
 package com.example.a1gworkapp.ui.home
 
 import android.util.Log
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a1gworkapp.data.DaySchedule
@@ -17,6 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class HomeViewModel: ViewModel() {
@@ -90,14 +92,21 @@ class HomeViewModel: ViewModel() {
     private fun groupScheduleByDay (scheduleList: List<ScheduleDto>): List<DaySchedule> {
         if (scheduleList.isEmpty()) return emptyList()
 
+        val today = LocalDate.now()
+        val apiDateFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
         val groupedByDate = scheduleList.groupBy { it.date }
         return groupedByDate.map { (_, entries) ->
             val firstEntry = entries.first()
+            val entryDate = ZonedDateTime.parse(firstEntry.date, apiDateFormatter)
+                .withZoneSameInstant(java.time.ZoneId.systemDefault())
+                .toLocalDate()
             DaySchedule(
                 dayName = firstEntry.day,
                 date = firstEntry.date,
                 workers = entries.map { it.employee },
-                workTimes = entries.map { it.workTime }
+                workTimes = entries.map { it.workTime },
+                isToday = entryDate.isEqual(today)
             )
         }.sortedBy { it.date }
     }
