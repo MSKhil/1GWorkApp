@@ -1,6 +1,6 @@
 package com.example.a1gworkapp.ui.components
 
-import com.example.a1gworkapp.data.DaySchedule
+import com.example.a1gworkapp.ui.home.DaySchedule
 
 data class ScheduleUiState(
     val thisWeekSchedule: List<DaySchedule> = emptyList(),

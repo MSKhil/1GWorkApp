@@ -1,6 +1,12 @@
 package com.example.a1gworkapp.ui.home
 
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,9 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +37,13 @@ import com.example.a1gworkapp.ui.components.Header
 import com.example.a1gworkapp.ui.components.SalaryCard
 import com.example.a1gworkapp.ui.components.TaskCard
 import androidx.core.net.toUri
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 
+
+@OptIn(ExperimentalMaterialApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel, onLogoutClick: () -> Unit
@@ -46,24 +58,29 @@ fun HomeScreen(
     val actionsUrl =
         "https://docs.google.com/spreadsheets/d/1swtOJv0Lu5_Mu1USUltOeAg2FQFw4eiZTxLO3bTDo1s/edit?gid=0#gid=0"
 
-    val isLoading by homeViewModel.isLoading.collectAsState()
+    val isRefreshing by homeViewModel.isRefreshing.collectAsState()
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = { homeViewModel.refresh() }
+    )
+    val isInitialLoading = currentMonthSalary == null && isRefreshing
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (currentMonthSalary != null) {
                     currentMonthSalary?.let { salary ->
                         Header(
                             workName = salary.employee,
@@ -73,63 +90,67 @@ fun HomeScreen(
                         )
                     }
 
+
                     currentMonthSalary?.let { salary ->
                         SalaryCard(
                             salary = salary.salary.toInt(),
                             cash = salary.cash.toInt(),
                             card = salary.card.toInt(),
                         )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        TaskCard(
-                            thisWeekSchedule = scheduleState.thisWeekSchedule,
-                            nextWeekSchedule = scheduleState.nextWeekSchedule,
-                        )
-
-                        Spacer(modifier = Modifier.height(80.dp))
                     }
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .align(Alignment.BottomCenter),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    FloatingBottomButton(
-                        text = "Акция",
-                        onclick = {
-                            val intent = Intent(Intent.ACTION_VIEW, actionsUrl.toUri())
-                            context.startActivity(intent)
-                        },
-                        modifier = Modifier.weight(1f)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    TaskCard(
+                        thisWeekSchedule = scheduleState.thisWeekSchedule,
+                        nextWeekSchedule = scheduleState.nextWeekSchedule,
                     )
-                    FloatingBottomButton(
-                        text = "Мотивация",
-                        onclick = {
-                            val intent = Intent(Intent.ACTION_VIEW, motivationUrl.toUri())
-                            context.startActivity(intent)
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
+                } else {
+                    Spacer(modifier = Modifier.height(200.dp))
                 }
+                Spacer(modifier = Modifier.height(80.dp))
             }
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .align(Alignment.BottomCenter),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                FloatingBottomButton(
+                    text = "Акция",
+                    onclick = {
+                        val intent = Intent(Intent.ACTION_VIEW, actionsUrl.toUri())
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                FloatingBottomButton(
+                    text = "Мотивация",
+                    onclick = {
+                        val intent = Intent(Intent.ACTION_VIEW, motivationUrl.toUri())
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.weight(1f)
                 )
             }
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                backgroundColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
+
 @Composable
 fun FloatingBottomButton(
-        text: String,
-        onclick: () -> Unit,
-        modifier: Modifier = Modifier
-        ){
+    text: String,
+    onclick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onclick,
         modifier = modifier,

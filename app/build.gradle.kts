@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.compose)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -72,20 +73,27 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     // Библиотеки Google API
-    implementation("com.google.api-client:google-api-client-gson:2.8.1")
-    implementation("com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.39.1")
-    implementation("com.google.http-client:google-http-client-android:2.0.1")
+    implementation(libs.google.api.client.gson)
+    implementation(libs.google.api.services.sheets)
+    implementation(libs.google.auth.library.oauth2.http)
+    implementation(libs.google.http.client.android)
 
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
-    implementation("com.squareup.picasso:picasso:2.71828")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.picasso)
 
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.compose.material.icons.extended)
 
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    implementation("androidx.compose.material:material:1.6.8")
+    implementation("androidx.compose.material3:material3:1.2.1")
 }
