@@ -7,6 +7,9 @@ googleApiClientGson = "2.8.1"
 googleApiServicesSheets = "v4-rev20220927-2.0.0"
 googleAuthLibraryOauth2Http = "1.40.0"
 googleHttpClientAndroid = "2.0.2"
+hiltAndroid = "2.51.1"
+hiltAndroidCompiler = "2.57.2"
+hiltNavigationCompose = "1.3.0"
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.4"
 composeCompiler = "2.2.21"
@@ -18,6 +21,8 @@ lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
 composeBom = "2025.11.00"
 foundation = "1.9.4"
+material = "1.9.5"
+material3 = "1.4.0"
 picasso = "2.71828"
 retrofit = "3.0.0"
 roomCompiler = "2.8.3"
@@ -25,10 +30,13 @@ roomKtx = "2.8.3"
 roomRuntime = "2.8.3"
 
 [libraries]
+androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
@@ -38,6 +46,8 @@ google-api-client-gson = { module = "com.google.api-client:google-api-client-gso
 google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuthLibraryOauth2Http" }
 google-api-services-sheets = { module = "com.google.apis:google-api-services-sheets", version.ref = "googleApiServicesSheets" }
 google-http-client-android = { module = "com.google.http-client:google-http-client-android", version.ref = "googleHttpClientAndroid" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
