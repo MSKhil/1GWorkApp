@@ -6,8 +6,9 @@ import com.example.a1gworkapp.network.SalaryDto
 import com.example.a1gworkapp.network.ScheduleDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class DataRepository(
+class DataRepository @Inject constructor(
     private val apiService: ApiService,
     private val appDao: AppDao
 ) {

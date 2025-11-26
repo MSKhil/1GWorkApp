@@ -3,23 +3,25 @@ package com.example.a1gworkapp.ui.home
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a1gworkapp.data.DataRepository
 import com.example.a1gworkapp.network.SalaryDto
 import com.example.a1gworkapp.network.ScheduleDto
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import javax.inject.Inject
 
 data class ScheduleUiState(
     val thisWeekSchedule: List<DaySchedule> = emptyList(),
     val nextWeekSchedule: List<DaySchedule> = emptyList()
 )
+
 data class DaySchedule(
     val dayName: String,
     val date: String,
@@ -28,7 +30,10 @@ data class DaySchedule(
     val isToday: Boolean = false
 )
 
-class HomeViewModel(private val repository: DataRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: DataRepository
+) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
@@ -43,7 +48,11 @@ class HomeViewModel(private val repository: DataRepository) : ViewModel() {
         .flatMapLatest { params ->
             repository.getSalaryStream(params.employeeName)
                 .onEach { salariesFromDb ->
-                    Log.d("VM_Debug", "БАЗА->VM: Получено зарплат из потока: ${salariesFromDb.size}") }
+                    Log.d(
+                        "VM_Debug",
+                        "БАЗА->VM: Получено зарплат из потока: ${salariesFromDb.size}"
+                    )
+                }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5), emptyList())
 
@@ -124,5 +133,9 @@ class HomeViewModel(private val repository: DataRepository) : ViewModel() {
         }.sortedBy { it.date }
     }
 
-    private data class UserParams(val salarySheetId: String, val scheduleSheetId: String, val employeeName: String)
+    private data class UserParams(
+        val salarySheetId: String,
+        val scheduleSheetId: String,
+        val employeeName: String
+    )
 }

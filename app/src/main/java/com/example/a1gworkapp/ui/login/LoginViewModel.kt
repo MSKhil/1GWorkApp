@@ -8,13 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a1gworkapp.data.UserCredentials
 import com.example.a1gworkapp.data.UserPreferencesRepository
+import com.example.a1gworkapp.network.ApiService
 import com.example.a1gworkapp.network.RetrofitClient
 import com.example.a1gworkapp.network.UserDto
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 enum class LoginState {
     IDLE,
@@ -23,9 +26,11 @@ enum class LoginState {
     FAILURE
 }
 
-class LoginViewModel(private val userPreferencesRepository: UserPreferencesRepository): ViewModel() {
-
-    private val apiService = RetrofitClient.apiService
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val apiService: ApiService
+) : ViewModel() {
 
     private val _allUsers = MutableStateFlow<List<UserDto>>(emptyList())
     private val _selectedCity = MutableStateFlow("")
@@ -57,13 +62,15 @@ class LoginViewModel(private val userPreferencesRepository: UserPreferencesRepos
         get() = _allUsers.value.map { it.city }.distinct().filter { it.isNotBlank() }
     val shops: List<String>
         get() = if (selectedCity.value.isNotBlank()) {
-            _allUsers.value.filter { it.city == selectedCity.value }.map { it.shop }.distinct().filter { it.isNotBlank() }
+            _allUsers.value.filter { it.city == selectedCity.value }.map { it.shop }.distinct()
+                .filter { it.isNotBlank() }
         } else {
             emptyList()
         }
     val employees: List<String>
         get() = if (selectedShop.value.isNotBlank()) {
-            _allUsers.value.filter { it.shop == selectedShop.value }.map { it.employeeName }.distinct().filter { it.isNotBlank() }
+            _allUsers.value.filter { it.shop == selectedShop.value }.map { it.employeeName }
+                .distinct().filter { it.isNotBlank() }
         } else {
             emptyList()
         }
@@ -100,8 +107,7 @@ class LoginViewModel(private val userPreferencesRepository: UserPreferencesRepos
             try {
                 _allUsers.value = apiService.getUsers()
                 Log.d("LoginViewModel", "Успешно загружено пользователей: ${_allUsers.value.size}")
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e("LoginViewModel", "Ошибка при загрузке пользователей", e)
             } finally {
                 _isLoading.value = false
@@ -109,9 +115,12 @@ class LoginViewModel(private val userPreferencesRepository: UserPreferencesRepos
         }
     }
 
-    fun login(){
+    fun login() {
         if (_allUsers.value.isEmpty()) {
-            Log.d("LoginViewModel", "Список пользователей еще не загружен. Повторная попытка через 1с.")
+            Log.d(
+                "LoginViewModel",
+                "Список пользователей еще не загружен. Повторная попытка через 1с."
+            )
             viewModelScope.launch {
                 kotlinx.coroutines.delay(1000)
                 login()
@@ -165,7 +174,7 @@ class LoginViewModel(private val userPreferencesRepository: UserPreferencesRepos
         _selectedEmployee.value = ""
     }
 
-    fun onShopSelected (shop: String) {
+    fun onShopSelected(shop: String) {
         resetLoginState()
         _selectedShop.value = shop
         _selectedEmployee.value = ""

@@ -10,6 +10,7 @@ import com.example.a1gworkapp.ui.login.LoginViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.a1gworkapp.data.AppDatabase
 import com.example.a1gworkapp.data.DataRepository
 import com.example.a1gworkapp.ui.home.HomeScreen
@@ -17,12 +18,11 @@ import com.example.a1gworkapp.ui.home.HomeViewModel
 import com.example.a1gworkapp.ui.login.LoginState
 import com.example.a1gworkapp.data.UserPreferencesRepository
 import com.example.a1gworkapp.network.RetrofitClient
-import com.example.a1gworkapp.ui.home.HomeViewModelFactory
-import com.example.a1gworkapp.ui.login.LoginViewModelFactory
 import com.example.a1gworkapp.ui.splash.SplashScreen
 import com.example.a1gworkapp.ui.theme._1GWorkAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,17 +30,8 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             _1GWorkAppTheme {
-                val userPreferencesRepository = UserPreferencesRepository(applicationContext)
-                val appDao = AppDatabase.getDatabase(applicationContext).appDao()
-                val apiService = RetrofitClient.apiService
-                val dataRepository = DataRepository(apiService, appDao)
-
-                val loginViewModel: LoginViewModel = viewModel(
-                    factory = LoginViewModelFactory(userPreferencesRepository)
-                )
-                val homeViewModel: HomeViewModel = viewModel(
-                    factory = HomeViewModelFactory(dataRepository)
-                )
+                val loginViewModel: LoginViewModel = hiltViewModel()
+                val homeViewModel: HomeViewModel = hiltViewModel()
 
                 val loginState by loginViewModel.loginState.collectAsState()
                 val loggedInUser by loginViewModel.loggedInUser.collectAsState()
