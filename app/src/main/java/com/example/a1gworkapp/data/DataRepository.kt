@@ -1,6 +1,7 @@
 package com.example.a1gworkapp.data
 
 import android.util.Log
+import com.example.a1gworkapp.common.Resource
 import com.example.a1gworkapp.network.ApiService
 import com.example.a1gworkapp.network.SalaryDto
 import com.example.a1gworkapp.network.ScheduleDto
@@ -24,8 +25,8 @@ class DataRepository @Inject constructor(
         }
     }
 
-    suspend fun refreshData(salarySheetId: String, scheduleSheetId: String, employeeName: String){
-        try {
+    suspend fun refreshData(salarySheetId: String, scheduleSheetId: String, employeeName: String): Resource<Unit> {
+        return try {
             val freshSalaries = apiService.getSalary(salarySheetId, employeeName)
             val freshSchedule = apiService.getSchedule(scheduleSheetId)
 
@@ -36,16 +37,13 @@ class DataRepository @Inject constructor(
             appDao.insertSalaries(freshSalaries.map { it.toSalaryEntity() })
             appDao.insertSchedule(freshSchedule.map { it.toScheduleEntity() })
 
-            Log.d("Repo_Debug", "БАЗА ДАННЫХ: Сохранение завершено.")
             Log.d("DataRepository", "Data refreshed and saved to DB.")
 
-        } catch (e: Exception){
-
+            Resource.Success(Unit)
+        } catch (e: Exception) {
             Log.e("DataRepository", "Failed to refresh data", e)
 
-            Log.e("Repo_Debug", "ОШИБКА в refreshData", e)
-
-            throw e
+            Resource.Error(message = "Не удалось обновить данные: ${e.localizedMessage}", cause = e)
         }
     }
 }

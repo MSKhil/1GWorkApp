@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.a1gworkapp.common.Resource
 import com.example.a1gworkapp.data.DataRepository
 import com.example.a1gworkapp.network.SalaryDto
 import com.example.a1gworkapp.network.ScheduleDto
@@ -94,18 +95,23 @@ class HomeViewModel @Inject constructor(
             _currentUserParams.value?.let { params ->
                 _isRefreshing.value = true
                 _errorMessage.value = null
-                try {
-                    repository.refreshData(
-                        params.salarySheetId,
-                        params.scheduleSheetId,
-                        params.employeeName
-                    )
-                } catch (e: Exception) {
-                    _errorMessage.value = "Ошибка обновления"
-                    Log.e("HomeViewModel", "Refresh failed", e)
-                } finally {
-                    _isRefreshing.value = false
+
+                val result = repository.refreshData(
+                    params.salarySheetId,
+                    params.scheduleSheetId,
+                    params.employeeName
+                )
+
+                when (result) {
+                    is Resource.Success<*> -> {
+                        Log.d("HomeViewModel", "Обновление прошло успешно")
+                    }
+                    is Resource.Error -> {
+                        _errorMessage.value = result.message
+                        Log.e("HomeViewModel", "Ошибка: ${result.message}")
+                    }
                 }
+                _isRefreshing.value = false
             }
         }
     }
